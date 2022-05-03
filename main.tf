@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.27"
+      version = "~> 4.12"
     }
   }
 }
@@ -23,7 +23,7 @@ resource "aws_instance" "iot-sensors" {
   ami           = "ami-0f9fc25dd2506cf6d"
   instance_type = "t2.micro"
   count = 3
-
+  provider = aws.virginia
   tags = {
     Name = "iot-${count.index}"
   }
@@ -32,7 +32,7 @@ resource "aws_instance" "iot-sensors" {
 resource "aws_instance" "firewall" {
   ami           = "ami-0f9fc25dd2506cf6d"
   instance_type = "t2.micro"
-
+  provider = aws.virginia
   tags = {
     Name = "ids"
   }
@@ -41,19 +41,16 @@ resource "aws_instance" "firewall" {
 resource "aws_instance" "fog" {
   ami           = "ami-0f9fc25dd2506cf6d"
   instance_type = "t2.micro"
-  
+  provider = aws.virginia
   tags = {
     Name = "logstash"
   }
 }
 
-module "cloud" {
-  source            = "./modules/ec2"
+resource "aws_instance" "cloud" {
   ami           = "ami-0f9fc25dd2506cf6d"
   instance_type = "t2.micro"
-  providers = {
-    aws = aws.saopaulo
-  }
+  provider = aws.saopaulo
   tags = {
     Name = "elasticsearch"
   }
